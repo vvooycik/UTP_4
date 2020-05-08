@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
+import static java.util.stream.Collectors.toList;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -24,15 +25,30 @@ public class Main {
             .forEach(word -> {
                   char[] arr = word.toCharArray();
                   Arrays.sort(arr);
-                  if(!map.containsKey(arr.toString())){
-                      map.put(arr.toString(), new ArrayList<String>());
+                  if(!map.containsKey(String.valueOf(arr))){
+                      map.put(String.valueOf(arr), new ArrayList<String>());
                   }
-                      map.get(arr.toString()).add(word);
+                      map.get(String.valueOf(arr)).add(word);
             });
-      Optional<Map.Entry<String, List<String>>> max = map.entrySet().stream().max(bySize);
-      System.out.print(max.get().getKey() + " ");
-      for(String word : max.get().getValue()){
-          System.out.print(word + " ");
-      }
+
+      List<Map.Entry<String, List<String>>> max = map
+              .entrySet()
+              .stream()
+              .filter(e -> e.getValue().size() == map
+                      .entrySet()
+                      .stream()
+                      .max(bySize)
+                      .get()
+                      .getValue()
+                      .size())
+              .collect(toList());
+
+      max.forEach(entry -> {
+          entry.getValue()
+                  .forEach(word -> {
+                      System.out.print(word + " ");
+                  });
+          System.out.println();
+      });
   }
 }
